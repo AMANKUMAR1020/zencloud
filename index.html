@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI DEVELOPER ASSIGNMENT</title>
+    <style>
+        body {
+            background-color: rgb(212, 227, 222, 0.5);
+            font-family: 'Times New Roman', Times, serif;
+        }
+        h1 {
+            padding: 10px;
+            margin: 20px;
+            font-size: 50px;
+            color: rgb(42, 114, 96);
+        }
+        .text {
+            font-size: 20px;
+            color: rgb(104, 187, 166);
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 10rem;
+            height: 2px;
+            border-radius: 30px;
+            border: 1px solid rgb(104, 187, 166);
+            box-sizing: border-box;
+        }
+        input[type="color"] {
+            -webkit-appearance: none;
+            width: 2rem;
+            height: 2rem;
+            border: 1px solid rgb(104, 187, 166);
+            box-sizing: border-box;
+        }
+        .partition {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+        .shape {
+            width: 50%;
+            height: 100%;
+            border-radius: 7px;
+            border: 1px solid rgb(123, 121, 121);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .parameters {
+            display: flex;
+            align-items: center;
+        }
+        .rectangle {
+            padding: 2rem;
+            margin: 3rem;
+            width: 60%;
+            height: 15%;
+            border: 1px solid black;
+            background-color: rgb(131 199 209);
+            transition: transform 0.1s ease;
+        }
+        .square {
+            padding: 2rem;
+            margin: 3rem;
+            width: 12rem;
+            height: 12rem;
+            border: 1px solid black;
+            background-color: rgb(61, 125, 150);
+            position: relative;
+        }
+        .circle {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 1px solid black;
+            background-color: aquamarine;
+            position: absolute;
+            cursor: grab;
+        }
+    </style>
+</head>
+<body>
+    <div class="partition">
+       <div class="shape">
+            <h1 id="rectangleTitle">Rectangle</h1>
+
+            <div class="parameters">
+                <p class="text">Change Color:</p>
+                <input type="color" class="inputColor"/>
+            </div>
+
+            <div class="parameters">
+                <p class="text">Start Rotating:</p>
+                <input type="range" min="0" max="360" value="0" class="inputAngle"/>
+            </div>
+            <div class="parameters">
+                <p class="text">Angle:</p>
+                <p id="angle" class="text"></p>
+            </div>
+            <div class="rectangle"></div>
+        </div>
+
+        <div class="shape">
+            <h1 id="circleTitle">Circle</h1>
+            <div class="parameters">
+                <p class="text">Change Size:</p>
+                <input type="range" min="10" max="100" value="35" class="inputSize"/>
+            </div>
+            <div class="square">
+                <div class="circle"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const angle = document.getElementById('angle');
+        const rectangleTitle = document.getElementById('rectangleTitle');
+        const circleTitle = document.getElementById('circleTitle');
+        const body = document.body;
+        const textElements = document.querySelectorAll('.text');
+        const rectangle = document.querySelector('.rectangle');
+        const circle = document.querySelector('.circle');
+        const inputAngle = document.querySelector('.inputAngle');
+        const inputColor = document.querySelector('.inputColor');
+        const inputSize = document.querySelector('.inputSize');
+        const square = document.querySelector('.square');
+
+        /* Rectangle */
+        inputAngle.addEventListener("input", () => {
+            const ang = inputAngle.value;
+            rectangle.style.transform = `rotate(${ang}deg)`;
+            angle.innerText = ang;
+        });
+
+        inputColor.addEventListener("input", () => {
+            rectangle.style.backgroundColor = inputColor.value;
+        });
+
+        /* Circle */
+        inputSize.addEventListener("input", () => {
+            const size = inputSize.value;
+            circle.style.width = size + "px";
+            circle.style.height = size + "px";
+        });
+
+        circle.onmousedown = function(event) {
+            circle.style.position = 'absolute';
+            circle.style.zIndex = 1;
+            document.body.append(circle);
+
+            const squareRect = square.getBoundingClientRect();
+
+            function moveAt(pageX, pageY) {
+                if (pageX - 17 >= squareRect.left && pageX + 17 <= squareRect.right &&
+                    pageY - 17 >= squareRect.top && pageY + 17 <= squareRect.bottom) {
+                    circle.style.left = pageX - circle.offsetWidth / 2 + 'px';
+                    circle.style.top = pageY - circle.offsetHeight / 2 + 'px';
+                }
+            }
+
+            moveAt(event.pageX, event.pageY);
+
+            function onMouseMove(event) {
+                moveAt(event.pageX, event.pageY);
+            }
+
+            document.addEventListener('mousemove', onMouseMove);
+
+            circle.onmouseup = function() {
+                document.removeEventListener('mousemove', onMouseMove);
+                circle.onmouseup = null;
+            };
+        };
+    </script>
+</body>
+</html>
